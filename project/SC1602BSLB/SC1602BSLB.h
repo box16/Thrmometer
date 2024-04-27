@@ -23,14 +23,14 @@ private:
         gpio_init_mask((1UL << REGISTER_SELECT) | (1UL << ENABLE) | (0xFF << D0));
         gpio_set_dir_out_masked((1UL << REGISTER_SELECT) | (1UL << ENABLE) | (0xFF << D0));
         sleep_ms(15);
-        lcd_command(0x38);
-        lcd_command(0x0C);
-        lcd_command(0x01);
+        lcd_command(FUNCTION_SET);
+        lcd_command(DISPLAY_ON);
+        lcd_command(CLEAR_DISPLAY);
         sleep_ms(2);
-        lcd_command(0x06);
+        lcd_command(ENTRY_MODE_SET);
     }
 
-    void pulse_enable() const
+    void send_enable_signal() const
     {
         gpio_put(ENABLE, 0);
         sleep_us(1);
@@ -43,7 +43,7 @@ private:
     void send_byte(uint8_t byte) const
     {
         gpio_put_masked(0xFF << D0, byte << D0);
-        pulse_enable();
+        send_enable_signal();
     }
 
     void lcd_command(uint8_t command)
@@ -63,4 +63,10 @@ private:
     const uint8_t D5 = 5;
     const uint8_t D6 = 6;
     const uint8_t D7 = 7;
+
+private:
+    const uint8_t CLEAR_DISPLAY = 0x01;
+    const uint8_t FUNCTION_SET = 0x38;   // 8bit mode,2lines,10dots
+    const uint8_t DISPLAY_ON = 0x0C;     // cursor,cursor position OFF
+    const uint8_t ENTRY_MODE_SET = 0x06; // increment, with display shift
 };
