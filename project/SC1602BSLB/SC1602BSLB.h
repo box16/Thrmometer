@@ -11,23 +11,36 @@ public:
         init();
     }
 
-    void Display(uint8_t data) const
+    void Display(const std::string message) const
     {
-        gpio_put(REGISTER_SELECT, 1);
-        send_byte(data);
+        send_message(message.substr(0, NUM_PER_LINE));
+
+        if (message.length() > NUM_PER_LINE)
+        {
+            send_command(ENTER_LINE);
+            send_message(message.substr(NUM_PER_LINE));
+        }
+    }
+
+    void Clear() const
+    {
+        send_command(CLEAR_DISPLAY);
     }
 
 private:
-    void init()
+    void init() const
     {
+        // GPIOの初期化
         gpio_init_mask((1UL << REGISTER_SELECT) | (1UL << ENABLE) | (0xFF << D0));
         gpio_set_dir_out_masked((1UL << REGISTER_SELECT) | (1UL << ENABLE) | (0xFF << D0));
         sleep_ms(15);
-        lcd_command(FUNCTION_SET);
-        lcd_command(DISPLAY_ON);
-        lcd_command(CLEAR_DISPLAY);
+
+        // LCDの初期化
+        send_command(FUNCTION_SET);
+        send_command(DISPLAY_ON);
+        send_command(CLEAR_DISPLAY);
         sleep_ms(2);
-        lcd_command(ENTRY_MODE_SET);
+        send_command(ENTRY_MODE_SET);
     }
 
     void send_enable_signal() const
@@ -40,13 +53,22 @@ private:
         sleep_us(100);
     }
 
-    void send_byte(uint8_t byte) const
+    void send_message(const std::string message) const
+    {
+        gpio_put(REGISTER_SELECT, 1);
+        for (char c : message)
+        {
+            send_byte(c);
+        }
+    }
+
+    void send_byte(const uint8_t byte) const
     {
         gpio_put_masked(0xFF << D0, byte << D0);
         send_enable_signal();
     }
 
-    void lcd_command(uint8_t command)
+    void send_command(const uint8_t command) const
     {
         gpio_put(REGISTER_SELECT, 0);
         send_byte(command);
@@ -55,18 +77,14 @@ private:
     // 書き込み専用にするためR/WはGNDへ
     const uint8_t REGISTER_SELECT = 28;
     const uint8_t ENABLE = 26;
+    // D0から8bit分を連続したPIN番号に接続する
     const uint8_t D0 = 0;
-    const uint8_t D1 = 1;
-    const uint8_t D2 = 2;
-    const uint8_t D3 = 3;
-    const uint8_t D4 = 4;
-    const uint8_t D5 = 5;
-    const uint8_t D6 = 6;
-    const uint8_t D7 = 7;
+    const uint8_t NUM_PER_LINE = 16;
 
 private:
     const uint8_t CLEAR_DISPLAY = 0x01;
     const uint8_t FUNCTION_SET = 0x38;   // 8bit mode,2lines,10dots
     const uint8_t DISPLAY_ON = 0x0C;     // cursor,cursor position OFF
-    const uint8_t ENTRY_MODE_SET = 0x06; // increment, with display shift
+    const uint8_t ENTRY_MODE_SET = 0x06; // increment, without display shift
+    const uint8_t ENTER_LINE = 0xC0;     // AddressSet : 0x40
 };
