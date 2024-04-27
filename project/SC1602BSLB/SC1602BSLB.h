@@ -3,10 +3,10 @@
 #include "LCD/LCD.h"
 #include <cstdint>
 
-class SC1602BSLB : public LCDInterface
+class SC1602BSLB_8bit : public LCDInterface
 {
 public:
-    SC1602BSLB()
+    SC1602BSLB_8bit()
     {
         init();
     }

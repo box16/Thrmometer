@@ -4,7 +4,7 @@
 int main()
 {
     stdio_init_all();
-    SC1602BSLB lcd;
+    const LCDInterface &lcd = SC1602BSLB_8bit();
 
     const char *text = "Hello, World!";
     while (*text)
