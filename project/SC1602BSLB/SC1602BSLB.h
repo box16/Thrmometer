@@ -6,9 +6,14 @@
 class SC1602BSLB_8bit : public LCDInterface
 {
 public:
-    SC1602BSLB_8bit()
+    SC1602BSLB_8bit(const uint8_t register_select_pin,
+                    const uint8_t enable_pin,
+                    const uint8_t data_0_pin // DATA0から8bit分を連続したPIN番号に接続する想定
+                    /*const uint8_t read_write_pin 書き込み専用にするためGND接続する想定*/)
     {
-        init();
+        init(register_select_pin,
+             enable_pin,
+             data_0_pin);
     }
 
     void Display(const std::string message) const
@@ -28,11 +33,17 @@ public:
     }
 
 private:
-    void init() const
+    void init(const uint8_t register_select_pin,
+              const uint8_t enable_pin,
+              const uint8_t data_0_pin)
     {
+        REGISTER_SELECT = register_select_pin;
+        ENABLE = enable_pin;
+        DATA0 = data_0_pin;
+
         // GPIOの初期化
-        gpio_init_mask((1UL << REGISTER_SELECT) | (1UL << ENABLE) | (0xFF << D0));
-        gpio_set_dir_out_masked((1UL << REGISTER_SELECT) | (1UL << ENABLE) | (0xFF << D0));
+        gpio_init_mask((1UL << REGISTER_SELECT) | (1UL << ENABLE) | (0xFF << DATA0));
+        gpio_set_dir_out_masked((1UL << REGISTER_SELECT) | (1UL << ENABLE) | (0xFF << DATA0));
         sleep_ms(15);
 
         // LCDの初期化
@@ -64,7 +75,7 @@ private:
 
     void send_byte(const uint8_t byte) const
     {
-        gpio_put_masked(0xFF << D0, byte << D0);
+        gpio_put_masked(0xFF << DATA0, byte << DATA0);
         send_enable_signal();
     }
 
@@ -74,14 +85,12 @@ private:
         send_byte(command);
     }
 
-    // 書き込み専用にするためR/WはGNDへ
-    const uint8_t REGISTER_SELECT = 28;
-    const uint8_t ENABLE = 26;
-    // D0から8bit分を連続したPIN番号に接続する
-    const uint8_t D0 = 0;
-    const uint8_t NUM_PER_LINE = 16;
-
 private:
+    uint8_t REGISTER_SELECT;
+    uint8_t ENABLE;
+    uint8_t DATA0;
+
+    const uint8_t NUM_PER_LINE = 16;
     const uint8_t CLEAR_DISPLAY = 0x01;
     const uint8_t FUNCTION_SET = 0x38;   // 8bit mode,2lines,10dots
     const uint8_t DISPLAY_ON = 0x0C;     // cursor,cursor position OFF
