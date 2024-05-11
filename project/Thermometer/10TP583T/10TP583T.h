@@ -14,6 +14,7 @@ public:
                const float multiplier_applied_thermopile,
                const float bias_on_termopile)
     {
+        adc_init();
         THERMISTOR_ADC = thermister_adc_no;
         THERMOPILE_ADC = thermopile_adc_no;
         getPinNoToADCNo();
@@ -61,6 +62,9 @@ private:
         default:
             break;
         }
+
+        adc_gpio_init(THERMISTOR_PIN);
+        adc_gpio_init(THERMOPILE_PIN);
     }
 
     float getThermistorTemperature() const
