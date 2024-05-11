@@ -2,6 +2,7 @@
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
 #include "LCD/SC1602BSLB/SC1602BSLB.h"
+#include "Thermometer/10TP583T/10TP583T.h"
 #include <cmath>
 
 const uint8_t LCD_REGISTER_SELECT = 14;
@@ -12,6 +13,8 @@ const uint8_t THERMISTOR_ADC = 0; // PIN26
 const uint8_t THERMOPILE_ADC = 1; // PIN27
 const uint8_t THERMISTOR_PIN = 26;
 const uint8_t THERMOPILE_PIN = 27;
+
+const float THERMISTOR_SERIES_R = 100000;
 
 int main()
 {
@@ -25,6 +28,9 @@ int main()
     const LCDInterface &lcd = SC1602BSLB_8bit(LCD_REGISTER_SELECT,
                                               LCD_ENABLE,
                                               LCD_DATA0);
+    const ThermometerIF &thermometer = T_10TP583T(THERMISTOR_ADC,
+                                                  THERMOPILE_ADC,
+                                                  THERMISTOR_SERIES_R);
 
     const float B = 3435;    // サーミスタのB定数
     const float T0 = 298.15; // サーミスタの基準温度(25度)
