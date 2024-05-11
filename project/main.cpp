@@ -1,7 +1,7 @@
 #include <string>
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
-#include "SC1602BSLB/SC1602BSLB.h"
+#include "LCD/SC1602BSLB/SC1602BSLB.h"
 #include <cmath>
 
 const uint8_t LCD_REGISTER_SELECT = 14;
