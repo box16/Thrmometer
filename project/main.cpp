@@ -8,6 +8,8 @@ const uint8_t LCD_REGISTER_SELECT = 14;
 const uint8_t LCD_ENABLE = 15;
 const uint8_t LCD_DATA0 = 0;
 
+const uint8_t THERMISTOR_ADC = 0; // PIN26
+const uint8_t THERMOPILE_ADC = 1; // PIN27
 const uint8_t THERMISTOR_PIN = 26;
 const uint8_t THERMOPILE_PIN = 27;
 
