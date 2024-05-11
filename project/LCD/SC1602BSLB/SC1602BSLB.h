@@ -1,6 +1,6 @@
 #pragma once
 #include "pico/stdlib.h"
-#include "LCD/LCD.h"
+#include "LCD.h"
 #include <cstdint>
 
 class SC1602BSLB_8bit : public LCDInterface
