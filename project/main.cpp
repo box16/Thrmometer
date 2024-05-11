@@ -15,6 +15,8 @@ const uint8_t THERMISTOR_PIN = 26;
 const uint8_t THERMOPILE_PIN = 27;
 
 const float THERMISTOR_SERIES_R = 100000;
+const float MULTIPLIER_APPLIED_TERMOPILE = 101;
+const float BIAS_ON_TERMOPILE = 16.2;
 
 int main()
 {
@@ -30,7 +32,9 @@ int main()
                                               LCD_DATA0);
     const ThermometerIF &thermometer = T_10TP583T(THERMISTOR_ADC,
                                                   THERMOPILE_ADC,
-                                                  THERMISTOR_SERIES_R);
+                                                  THERMISTOR_SERIES_R,
+                                                  MULTIPLIER_APPLIED_TERMOPILE,
+                                                  BIAS_ON_TERMOPILE);
 
     const float B = 3435;    // サーミスタのB定数
     const float T0 = 298.15; // サーミスタの基準温度(25度)
