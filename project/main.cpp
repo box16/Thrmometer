@@ -1,4 +1,5 @@
 #include <string>
+#include <memory>
 #include "pico/stdlib.h"
 #include "LCD/SC1602BSLB/SC1602BSLB.h"
 #include "Thermometer/10TP583T/10TP583T.h"
@@ -18,20 +19,20 @@ int main()
 {
     stdio_init_all();
 
-    const LCDInterface &lcd = SC1602BSLB_8bit(LCD_REGISTER_SELECT,
-                                              LCD_ENABLE,
-                                              LCD_DATA0);
-    const ThermometerIF &thermometer = T_10TP583T(THERMISTOR_ADC,
-                                                  THERMOPILE_ADC,
-                                                  THERMISTOR_SERIES_R,
-                                                  MULTIPLIER_APPLIED_TERMOPILE,
-                                                  BIAS_ON_TERMOPILE);
+    std::unique_ptr<LCDIF> sc1602blsb = std::make_unique<SC1602BSLB_8bit>(LCD_REGISTER_SELECT,
+                                                                          LCD_ENABLE,
+                                                                          LCD_DATA0);
+    std::unique_ptr<ThermometerIF> t_10tp583t = std::make_unique<T_10TP583T>(THERMISTOR_ADC,
+                                                                             THERMOPILE_ADC,
+                                                                             THERMISTOR_SERIES_R,
+                                                                             MULTIPLIER_APPLIED_TERMOPILE,
+                                                                             BIAS_ON_TERMOPILE);
 
     while (1)
     {
-        lcd.Display("Temp: " + std::to_string(thermometer.Get()));
+        sc1602blsb->Display("Temp: " + std::to_string(t_10tp583t->Get()));
         sleep_ms(1000);
-        lcd.Clear();
+        sc1602blsb->Clear();
         sleep_ms(1000);
     }
 }

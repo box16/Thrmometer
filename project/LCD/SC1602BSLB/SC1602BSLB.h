@@ -3,7 +3,7 @@
 #include "LCD.h"
 #include <cstdint>
 
-class SC1602BSLB_8bit : public LCDInterface
+class SC1602BSLB_8bit : public LCDIF
 {
 public:
     SC1602BSLB_8bit(const uint8_t register_select_pin,

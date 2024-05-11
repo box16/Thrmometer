@@ -2,7 +2,7 @@
 #include <cstdint>
 #include <string>
 
-class LCDInterface
+class LCDIF
 {
 public:
     virtual void Display(const std::string message) const = 0;
